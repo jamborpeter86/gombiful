@@ -1,0 +1,12 @@
+{
+  "buildCommand": "cd gombiful-app && npm run build",
+  "outputDirectory": "gombiful-app/dist",
+  "installCommand": "cd gombiful-app && npm install",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
