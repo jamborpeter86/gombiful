@@ -48,49 +48,65 @@ const MultiplayerDJ = ({ roomCode, playerId, onExit }) => {
     }, []);
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-yellow-400 via-orange-500 to-red-600 flex items-center justify-center p-4">
-        <div className="bg-white/95 backdrop-blur rounded-3xl shadow-2xl p-8 max-w-2xl w-full animate-scaleUp">
+      <div className="min-h-screen bg-gradient-to-br from-yellow-400 via-orange-500 to-red-600 flex items-center justify-center p-4 relative overflow-hidden">
+        {/* Confetti effect */}
+        {[...Array(10)].map((_, i) => (
+          <div key={i} className="confetti" />
+        ))}
+        
+        <div className="bg-white/95 backdrop-blur rounded-3xl shadow-2xl p-8 max-w-2xl w-full animate-scaleUp relative z-10">
           <div className="text-center mb-8">
             <Trophy className="w-24 h-24 mx-auto text-yellow-500 mb-4 animate-bounce" />
-            <h1 className="text-4xl font-bold text-gray-800 mb-2 animate-fadeIn">Játék vége!</h1>
-            <h2 className="text-3xl font-bold text-purple-600 mb-2 animate-slideInLeft stagger-1">🏆 {winner?.name}</h2>
-            <p className="text-xl text-gray-600 animate-slideInRight stagger-2">Nyert {winner?.score}/10 ponttal!</p>
+            <h1 className="text-4xl font-bold text-gray-800 mb-2 animate-fadeIn">🎉 Játék vége! 🎉</h1>
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent mb-2 animate-slideInLeft stagger-1">
+              🏆 {winner?.name} NYERT! 🏆
+            </h2>
+            <p className="text-xl text-gray-600 animate-slideInRight stagger-2">{winner?.score}/10 ponttal!</p>
           </div>
 
           {/* Leaderboard */}
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-gray-800 mb-3">Eredmények</h3>
             <div className="space-y-2">
-              {sortedPlayers.map((player, index) => (
+              {sortedPlayers.map((player, index) => {
+                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
+                
+                return (
                 <div
                   key={player.id}
                   className={`p-4 rounded-xl flex items-center justify-between animate-slideInLeft ${
                     index === 0
                       ? 'bg-gradient-to-r from-yellow-100 to-orange-100 border-2 border-yellow-400 animate-glow'
+                      : index === 1
+                      ? 'bg-gradient-to-r from-gray-100 to-slate-100 border border-gray-300'
+                      : index === 2
+                      ? 'bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200'
                       : 'bg-gray-50'
                   }`}
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`text-2xl font-bold ${
-                      index === 0 ? 'text-yellow-600' :
-                      index === 1 ? 'text-gray-400' :
-                      index === 2 ? 'text-orange-400' : 'text-gray-300'
-                    }`}>
-                      #{index + 1}
+                    <div className="text-3xl">
+                      {medal || `#${index + 1}`}
                     </div>
                     <div>
-                      <div className="font-semibold text-gray-800">{player.name}</div>
+                      <div className="font-semibold text-gray-800 flex items-center gap-2">
+                        {player.name}
+                        {index === 0 && <span className="text-xs bg-yellow-500 text-white px-2 py-0.5 rounded-full">GYŐZTES</span>}
+                      </div>
                       <div className="text-sm text-gray-500">
-                        🎵 {player.score} kártya • 🪙 {player.tokens} zseton
+                        🎵 {player.score} helyes • 🪙 {player.tokens} zseton • 🔥 {player.correctStreak} streak
                       </div>
                     </div>
                   </div>
-                  <div className="text-2xl font-bold text-purple-600">
+                  <div className={`text-2xl font-bold ${
+                    index === 0 ? 'text-yellow-600' : 'text-purple-600'
+                  }`}>
                     {player.score}/10
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
