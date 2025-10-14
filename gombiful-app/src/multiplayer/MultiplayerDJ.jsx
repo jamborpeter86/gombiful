@@ -3,6 +3,7 @@ import { Music, Users, Play, ArrowLeft, Trophy, Loader, ChevronRight, Volume2, V
 import useGameSession from '../hooks/useGameSession';
 import { validatePlacement, insertSongInTimeline, countAnsweredPlayers, sortPlayersByScore, getPlayerConnectionStatus } from '../utils/gameUtils';
 import { GAME_CONFIG } from '../utils/constants';
+import soundManager from '../utils/soundEffects';
 
 const MultiplayerDJ = ({ roomCode, playerId, onExit }) => {
   const { gameState, isLoading, revealResults, nextRound, skipSong, endGame } = useGameSession(roomCode, 'dj', playerId);
@@ -41,14 +42,19 @@ const MultiplayerDJ = ({ roomCode, playerId, onExit }) => {
     const sortedPlayers = sortPlayersByScore(gameState.players);
     const winner = sortedPlayers[0];
 
+    // Play win sound on game end
+    useEffect(() => {
+      soundManager.playWin();
+    }, []);
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-yellow-400 via-orange-500 to-red-600 flex items-center justify-center p-4">
-        <div className="bg-white/95 backdrop-blur rounded-3xl shadow-2xl p-8 max-w-2xl w-full">
+        <div className="bg-white/95 backdrop-blur rounded-3xl shadow-2xl p-8 max-w-2xl w-full animate-scaleUp">
           <div className="text-center mb-8">
             <Trophy className="w-24 h-24 mx-auto text-yellow-500 mb-4 animate-bounce" />
-            <h1 className="text-4xl font-bold text-gray-800 mb-2">Játék vége!</h1>
-            <h2 className="text-3xl font-bold text-purple-600 mb-2">🏆 {winner?.name}</h2>
-            <p className="text-xl text-gray-600">Nyert {winner?.score}/10 ponttal!</p>
+            <h1 className="text-4xl font-bold text-gray-800 mb-2 animate-fadeIn">Játék vége!</h1>
+            <h2 className="text-3xl font-bold text-purple-600 mb-2 animate-slideInLeft stagger-1">🏆 {winner?.name}</h2>
+            <p className="text-xl text-gray-600 animate-slideInRight stagger-2">Nyert {winner?.score}/10 ponttal!</p>
           </div>
 
           {/* Leaderboard */}
@@ -58,11 +64,12 @@ const MultiplayerDJ = ({ roomCode, playerId, onExit }) => {
               {sortedPlayers.map((player, index) => (
                 <div
                   key={player.id}
-                  className={`p-4 rounded-xl flex items-center justify-between ${
+                  className={`p-4 rounded-xl flex items-center justify-between animate-slideInLeft ${
                     index === 0
-                      ? 'bg-gradient-to-r from-yellow-100 to-orange-100 border-2 border-yellow-400'
+                      ? 'bg-gradient-to-r from-yellow-100 to-orange-100 border-2 border-yellow-400 animate-glow'
                       : 'bg-gray-50'
                   }`}
+                  style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <div className="flex items-center gap-3">
                     <div className={`text-2xl font-bold ${
@@ -210,20 +217,20 @@ const MultiplayerDJ = ({ roomCode, playerId, onExit }) => {
         <div className="lg:col-span-2 space-y-4">
           {/* Video Player */}
           {currentSong && (
-            <div className="bg-white/95 backdrop-blur rounded-2xl p-6 shadow-lg">
+            <div className="bg-white/95 backdrop-blur rounded-2xl p-6 shadow-lg animate-fadeIn">
               <div className="mb-4">
-                <h2 className="text-xl font-bold text-gray-800 mb-2">
+                <h2 className="text-xl font-bold text-gray-800 mb-2 transition-all duration-300">
                   {isRevealing ? (
                     <>
-                      <span className="text-purple-600">{currentSong.title}</span>
-                      <span className="text-gray-500"> • {currentSong.artist}</span>
+                      <span className="text-purple-600 animate-slideInLeft">{currentSong.title}</span>
+                      <span className="text-gray-500 animate-slideInRight"> • {currentSong.artist}</span>
                     </>
                   ) : (
                     '🎵 Jelenlegi dal'
                   )}
                 </h2>
                 {isRevealing && (
-                  <div className="text-3xl font-bold text-pink-600">{currentSong.year}</div>
+                  <div className="text-3xl font-bold text-pink-600 animate-scaleUp">{currentSong.year}</div>
                 )}
               </div>
 
@@ -359,7 +366,7 @@ const MultiplayerDJ = ({ roomCode, playerId, onExit }) => {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-2xl font-bold text-purple-600">
+                      <div className="text-2xl font-bold text-purple-600 transition-all duration-300">
                         {player.score}/{GAME_CONFIG.WINNING_SCORE}
                       </div>
                     </div>

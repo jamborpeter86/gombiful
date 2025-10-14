@@ -96,13 +96,54 @@
 - `/src/hooks/useGameSession.js` - Added skipSong() function
 - `/src/multiplayer/MultiplayerDJ.jsx` - Added Skip button and handler
 
-### 9. Animated Transitions
-**Status:** BACKLOG
+### 9. ✅ Animated Transitions
+**Status:** ✅ COMPLETE
 **Description:** Add smooth animations for card reveals, score updates, etc.
+**Implementation:** ✅
+- Created comprehensive CSS animation library in `index.css`:
+  - fadeIn, slideInLeft/Right, scaleUp animations
+  - cardFlip, shake, scoreUp effects
+  - Glow animation for winner
+  - Stagger delays for sequential animations
+- Applied animations throughout UI:
+  - Result screen: scaleUp container, bounce/shake for correct/incorrect
+  - Card reveals: fadeIn + hover scale effects
+  - Leaderboard: slideIn with staggered delays
+  - Winner card: animated glow effect
+  - Song title reveal: slideIn animations
+  - Score updates: smooth transitions
+  - Player cards: transition effects on status changes
+**Files Changed:**
+- `/src/index.css` - Added 8 keyframe animations + utility classes
+- `/src/multiplayer/MultiplayerPlayer.jsx` - Applied animations to result screen and cards
+- `/src/multiplayer/MultiplayerDJ.jsx` - Animated leaderboard, song reveals, player cards
 
-### 10. Sound Effects
-**Status:** BACKLOG
+### 10. ✅ Sound Effects
+**Status:** ✅ COMPLETE
 **Description:** Add sound feedback for correct/incorrect answers, game events.
+**Implementation:** ✅
+- Created `SoundManager` class using Web Audio API
+- Built-in sound effects (no external files needed):
+  - `playCorrect()` - ascending happy notes (C5, E5, G5)
+  - `playWrong()` - descending sad notes (A4, G4, F4)
+  - `playWin()` - triumphant sequence for game end
+  - `playCardPlace()` - single click sound
+  - `playClick()` - button clicks
+  - `playJoin/Disconnect()` - connection sounds
+- Features:
+  - Volume control (0.0 - 1.0)
+  - Enable/disable toggle
+  - Preferences saved to localStorage
+  - Singleton pattern for easy access
+- Integrated into gameplay:
+  - Reveal screen: correct/wrong sounds
+  - Card placement: click + place sounds
+  - Game end: win celebration sound
+  - Button clicks: UI feedback
+**Files Changed:**
+- `/src/utils/soundEffects.js` - Created SoundManager class
+- `/src/multiplayer/MultiplayerPlayer.jsx` - Added sounds to reveal & placement
+- `/src/multiplayer/MultiplayerDJ.jsx` - Added win sound
 
 ### 11. End Game Celebration
 **Status:** BACKLOG

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Music, Users, Loader, ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Music, ChevronLeft, ChevronRight, Coins, Trophy, Loader } from 'lucide-react';
 import useGameSession from '../hooks/useGameSession';
 import { GAME_CONFIG } from '../utils/constants';
 import { sortPlayersByScore } from '../utils/gameUtils';
+import soundManager from '../utils/soundEffects';
 
 const MultiplayerPlayer = ({ roomCode, playerId, onExit }) => {
   const { gameState, isLoading, submitAnswer, useTokenSkip } = useGameSession(roomCode, 'player', playerId);
@@ -101,6 +102,15 @@ const MultiplayerPlayer = ({ roomCode, playerId, onExit }) => {
     const wasCorrect = myResult?.correct || false;
     const correctSong = currentSong;
 
+    // Play sound effect on reveal
+    useEffect(() => {
+      if (wasCorrect) {
+        soundManager.playCorrect();
+      } else {
+        soundManager.playWrong();
+      }
+    }, []); // Run once when revealing
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-900 flex items-center justify-center p-4">
         <div className="bg-white/95 backdrop-blur rounded-3xl shadow-2xl p-8 max-w-md w-full text-center animate-scaleUp">
@@ -166,12 +176,15 @@ const MultiplayerPlayer = ({ roomCode, playerId, onExit }) => {
   }
 
   const handlePlaceCard = (index) => {
+    soundManager.playClick();
     setPlacementIndex(index);
     setShowConfirmation(true);
   };
 
   const handleConfirmPlacement = async () => {
     if (placementIndex === null) return;
+    
+    soundManager.playCardPlace();
     
     await submitAnswer(placementIndex);
     setShowConfirmation(false);
@@ -298,16 +311,15 @@ const MultiplayerPlayer = ({ roomCode, playerId, onExit }) => {
                 {/* Existing cards with slots between */}
                 {myPlayer.timeline?.map((song, idx) => (
                   <React.Fragment key={song.id}>
-                    <div className="bg-gradient-to-br from-purple-500 to-pink-500 text-white p-4 rounded-xl shadow-md">
+                    <div className="bg-gradient-to-br from-purple-500 to-pink-500 text-white p-4 rounded-xl shadow-md animate-fadeIn hover:scale-105 transition-transform duration-200">
                       <div className="text-2xl font-bold mb-1">{song.year}</div>
-                      <div className="text-sm font-semibold truncate">{song.title}</div>
-                      <div className="text-xs opacity-90 truncate">{song.artist}</div>
+                      <div className="text-sm opacity-90">{song.title}</div>
+                      <div className="text-sm opacity-75">{song.artist}</div>
                     </div>
                     
                     {/* Slot after this card */}
                     <button
                       onClick={() => handlePlaceCard(idx + 1)}
-                      className="w-full border-2 border-dashed border-purple-300 bg-purple-50 hover:bg-purple-100 rounded-xl p-3 transition-all"
                     >
                       <div className="flex items-center justify-center gap-2 text-purple-600 font-semibold">
                         <ChevronRight className="w-5 h-5" />
