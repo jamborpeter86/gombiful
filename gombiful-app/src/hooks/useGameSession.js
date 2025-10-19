@@ -78,6 +78,7 @@ export function useGameSession(roomCode, role, playerId) {
   // Create new game (DJ only)
   const createGame = useCallback(async (roomCode, djName, songList) => {
     try {
+      console.log('[CREATE] Creating game with roomCode:', roomCode);
       const gameRef = doc(db, 'games', roomCode);
       
       // Shuffle songs
@@ -104,9 +105,10 @@ export function useGameSession(roomCode, role, playerId) {
       };
 
       await setDoc(gameRef, gameData);
+      console.log('[CREATE] Game created successfully:', roomCode);
       return { success: true, roomCode };
     } catch (err) {
-      console.error('Error creating game:', err);
+      console.error('[CREATE] Error creating game:', err);
       return { success: false, error: err.message };
     }
   }, [playerId]);
@@ -114,15 +116,21 @@ export function useGameSession(roomCode, role, playerId) {
   // Join game (Player only)
   const joinGame = useCallback(async (playerName, targetRoomCode) => {
     const codeToUse = targetRoomCode || roomCode;
+    console.log('[JOIN] Attempting to join game:', { targetRoomCode, roomCode, codeToUse, playerId });
+    
     if (!codeToUse || !playerId) return { success: false, error: 'Missing room code or player ID' };
 
     try {
       const gameRef = doc(db, 'games', codeToUse);
+      console.log('[JOIN] Fetching game document:', codeToUse);
       const gameSnap = await getDoc(gameRef);
 
       if (!gameSnap.exists()) {
+        console.log('[JOIN] Game not found:', codeToUse);
         return { success: false, error: 'Game not found' };
       }
+      
+      console.log('[JOIN] Game found:', gameSnap.data());
 
       const game = gameSnap.data();
 
