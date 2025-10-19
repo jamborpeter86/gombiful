@@ -10,6 +10,20 @@ const MultiplayerPlayer = ({ roomCode, playerId, onExit }) => {
   const [placementIndex, setPlacementIndex] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
+  // Play sound effect on reveal (must be at top level, not in conditional)
+  useEffect(() => {
+    if (gameState?.status === 'revealing' && gameState?.revealData) {
+      const myResult = gameState.revealData.results?.[playerId];
+      const wasCorrect = myResult?.correct || false;
+      
+      if (wasCorrect) {
+        soundManager.playCorrect();
+      } else {
+        soundManager.playWrong();
+      }
+    }
+  }, [gameState?.status, gameState?.revealData, playerId]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-900 flex items-center justify-center">
@@ -101,15 +115,6 @@ const MultiplayerPlayer = ({ roomCode, playerId, onExit }) => {
     const myResult = gameState.revealData.results?.[playerId];
     const wasCorrect = myResult?.correct || false;
     const correctSong = currentSong;
-
-    // Play sound effect on reveal
-    useEffect(() => {
-      if (wasCorrect) {
-        soundManager.playCorrect();
-      } else {
-        soundManager.playWrong();
-      }
-    }, []); // Run once when revealing
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-900 flex items-center justify-center p-4">
