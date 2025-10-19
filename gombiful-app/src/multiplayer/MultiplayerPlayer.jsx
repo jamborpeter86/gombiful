@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Music, ChevronLeft, ChevronRight, Coins, Trophy, Loader } from 'lucide-react';
+import { Music, ChevronLeft, ChevronRight, Coins, Trophy, Loader, ArrowLeft } from 'lucide-react';
 import useGameSession from '../hooks/useGameSession';
 import { GAME_CONFIG } from '../utils/constants';
 import { sortPlayersByScore } from '../utils/gameUtils';
