@@ -69,8 +69,8 @@ export function useGameSession(roomCode, role, playerId) {
     // Update immediately
     updateHeartbeat();
 
-    // Then update every 10 seconds
-    const interval = setInterval(updateHeartbeat, 10000);
+    // Then update every 30 seconds (reduced to save quota)
+    const interval = setInterval(updateHeartbeat, 30000);
 
     return () => clearInterval(interval);
   }, [roomCode, playerId, gameState]);
@@ -171,13 +171,16 @@ export function useGameSession(roomCode, role, playerId) {
         lastSeen: Date.now()  // Presence tracking
       };
 
+      console.log('[JOIN] Adding player to game:', playerId, playerData);
+      
       await updateDoc(gameRef, {
         [`players.${playerId}`]: playerData
       });
 
+      console.log('[JOIN] Player added successfully!');
       return { success: true };
     } catch (err) {
-      console.error('Error joining game:', err);
+      console.error('[JOIN] Error joining game:', err);
       return { success: false, error: err.message };
     }
   }, [roomCode, playerId]);
